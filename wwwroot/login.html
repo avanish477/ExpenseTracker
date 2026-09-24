@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Smart Expense Tracker System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific layouts for full page centering */
+        body.auth-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            padding: 1.5rem;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .auth-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-brand .logo-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .auth-brand h2 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-header {
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h1 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            gap: 4px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .auth-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .auth-card form {
+            text-align: left;
+        }
+
+        .auth-card .btn-submit {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.75rem;
+        }
+
+        .auth-footer {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="dark-theme auth-page">
+    <div class="card auth-card">
+        <div class="card-glow"></div>
+        
+        <div class="auth-brand">
+            <div class="logo-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+            </div>
+            <h2>Smart Expense</h2>
+        </div>
+
+        <div class="auth-header">
+            <h1 id="auth-title">Welcome Back</h1>
+            <p id="auth-subtitle">Log in to monitor and track your balances.</p>
+        </div>
+
+        <!-- Toggle Sign In vs Sign Up -->
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="tab-login">Sign In</button>
+            <button class="auth-tab" id="tab-register">Sign Up</button>
+        </div>
+
+        <form id="auth-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="e.g. janesmith" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit" id="btn-auth-submit">Sign In</button>
+        </form>
+
+        <div class="auth-footer">
+            <span id="footer-text">Don't have an account?</span>
+            <a href="#" id="auth-link-toggle">Sign up now</a>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Simple Toast utility for login.html
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' 
+                ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
+                : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+            
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'none';
+                toast.offsetHeight;
+                toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // State variables
+        let isLoginMode = true;
+
+        // Elements
+        const authForm = document.getElementById('auth-form');
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const btnAuthSubmit = document.getElementById('btn-auth-submit');
+        const authLinkToggle = document.getElementById('auth-link-toggle');
+        const footerText = document.getElementById('footer-text');
+        
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+
+        // Setup theme
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.remove('dark-theme');
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+                document.body.classList.add('dark-theme');
+            }
+        }
+        setupTheme();
+
+        // Switch modes
+        function setAuthMode(loginMode) {
+            isLoginMode = loginMode;
+            authForm.reset();
+
+            if (isLoginMode) {
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                authTitle.textContent = 'Welcome Back';
+                authSubtitle.textContent = 'Log in to monitor and track your balances.';
+                btnAuthSubmit.textContent = 'Sign In';
+                footerText.textContent = "Don't have an account?";
+                authLinkToggle.textContent = 'Sign up now';
+                passwordInput.autocomplete = "current-password";
+            } else {
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+                authTitle.textContent = 'Create Account';
+                authSubtitle.textContent = 'Sign up for free and secure your wallet.';
+                btnAuthSubmit.textContent = 'Sign Up';
+                footerText.textContent = 'Already have an account?';
+                authLinkToggle.textContent = 'Log in here';
+                passwordInput.autocomplete = "new-password";
+            }
+        }
+
+        tabLogin.addEventListener('click', () => setAuthMode(true));
+        tabRegister.addEventListener('click', () => setAuthMode(false));
+        authLinkToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            setAuthMode(!isLoginMode);
+        });
+
+        // Submit registration/login
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            const url = isLoginMode ? '/api/auth/login' : '/api/auth/register';
+            const payload = { username, password };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorMsg = await response.text();
+                    throw new Error(errorMsg || 'Failed to authenticate');
+                }
+
+                if (isLoginMode) {
+                    showToast('Welcome to Smart Expense Tracker!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/index.html';
+                    }, 500);
+                } else {
+                    showToast('Account registered! Logging in...', 'success');
+                    // Automatically log in newly registered user
+                    const loginResp = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (loginResp.ok) {
+                        setTimeout(() => {
+                            window.location.href = '/index.html';
+                        }, 800);
+                    } else {
+                        setAuthMode(true);
+                    }
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+    </script>
+</body>
+</html>
